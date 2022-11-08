@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
+model User {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime     @default(now())
+  orders      Order[]
+  genPictures GenPicture[]
+}
+
+model Order {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt    DateTime    @default(now())
+  buyer        User        @relation(fields: [buyerId], references: [id])
+  buyerId      String      @db.ObjectId
+  email        String?
+  phone        String?
+  firstName    String?
+  secondName   String?
+  deliveryType String?
+  paymentType  String?
+  city         String?
+  address      String?
+  zip          String?
+  comment      String?
+  products     OrderItem[]
+  accessCode   AccessCode?
+  coupon       Coupon?     @relation(fields: [couponId], references: [id])
+  couponId     String?     @db.ObjectId
+}
+
+model OrderItem {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  order     Order  @relation(fields: [orderId], references: [id])
+  orderId   String @db.ObjectId
+  productId String @db.ObjectId
+  quantity  Int    @default(1)
+}
+
+model AccessCode {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  order   Order   @relation(fields: [orderId], references: [id])
+  orderId String  @unique @db.ObjectId
+  code    String  @unique
+  active  Boolean @default(false)
+}
+
+model Coupon {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  order    Order[]
+  code     String
+  discount Int
+}
+
+model Product {
+  id        String         @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime       @default(now())
+  name      String
+  features  String[]
+  price     Int
+  images    ProductImage[] @relation(fields: [imageIds], references: [id])
+  imageIds  String[]       @db.ObjectId
+}
+
+model ProductImage {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  product   Product[] @relation(fields: [productId], references: [id])
+  productId String[]  @db.ObjectId
+  src       String
+  alt       String
+}
+
+model GenPicture {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String   @db.ObjectId
+  src       String
+  isDeleted Boolean  @default(false)
+}

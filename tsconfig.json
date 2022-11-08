@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "pretty": true,
+    "experimentalDecorators": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "strict": false,
+    "module": "esnext",
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "removeComments": false,
+    "sourceMap": false,
+    "lib": ["dom", "esnext"],
+    "target": "ESnext"
+  }
+}
